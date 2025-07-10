@@ -23,10 +23,10 @@ password = 'your awesome wifi password'
     # N2YO API key: get it here after account creation https://www.n2yo.com/login/edit/
 api_key = "XXXXXX-XXXXXX-XXXXXX-XXXXXX"
    
-    # location where you want to check the satelites above
+    # location where you want to check the satellites above
 base_settings = "47.50;19.04;0" # lat;lng;elevation first ever run values. Also the last ones as I never finished the settings view where you can set this up
 
-view = 0 # it starts here. 0 - satelites view, 1 - settings view
+view = 0 # it starts here. 0 - satellites view, 1 - settings view
 
 # ================== INI END ================== 
 
@@ -35,9 +35,9 @@ settings = "" # will be populated either with base_settings at first run or sett
 api_url = "https://api.n2yo.com/rest/v1/satellite/above"
 
 
-above_in_view = 0 # the satelite in view
+above_in_view = 0 # the satellite in view
 
-step_time = 100 # left and right step speed between satelites in ms
+step_time = 100 # left and right step speed between satellites in ms
 latlng_step_time = 200 # settings number step time needs to be fast to be used
 api_refresh_time = 40000 # you have 100 per hour limit so 36000 is the absolute minimum. Do not forget every restart is an API call too, keep that in mind when debuging.
 
@@ -379,7 +379,7 @@ def connect(LCD):
 def api_call(LCD):
     gc.collect() # you have to collect garbage, because you run out memory
     LCD.fill(background_color)
-    printstring("Requesting satelite data...",15,30,1,main_color,LCD)
+    printstring("Requesting satellite data...",15,30,1,main_color,LCD)
     LCD.show()
     response = requests.get(f"{api_url}/{settings[0]}/{settings[1]}/{settings[2]}/10/0&apiKey={api_key}")
     response_code = response.status_code # could check it, I will not tho
@@ -436,11 +436,11 @@ if __name__=='__main__':
     settings[2] = float(settings[2])
     
     # you can use this for debuging without API calls
-    # satelite_above_data_json = '{"info":{"category":"Amateur radio","transactionscount":17,"satcount":3},"above":[{"satid":20480,"satname":"JAS 1B (FUJI 2)","intDesignator":"1990-013C","launchDate":"1990-02-07","satlat":49.5744,"satlng":-96.7081,"satalt":1227.9326},{"satid":26609,"satname":"AMSAT OSCAR 40","intDesignator":"2000-072B","launchDate":"2000-11-16","satlat":5.5105,"satlng":-21.4478,"satalt":49678.6389},{"satid":40719,"satname":"DEORBITSAIL","intDesignator":"2015-032E","launchDate":"2015-07-10","satlat":43.8106,"satlng":-90.3944,"satalt":657.5516}]}'
+    # satellite_above_data_json = '{"info":{"category":"Amateur radio","transactionscount":17,"satcount":3},"above":[{"satid":20480,"satname":"JAS 1B (FUJI 2)","intDesignator":"1990-013C","launchDate":"1990-02-07","satlat":49.5744,"satlng":-96.7081,"satalt":1227.9326},{"satid":26609,"satname":"AMSAT OSCAR 40","intDesignator":"2000-072B","launchDate":"2000-11-16","satlat":5.5105,"satlng":-21.4478,"satalt":49678.6389},{"satid":40719,"satname":"DEORBITSAIL","intDesignator":"2015-032E","launchDate":"2015-07-10","satlat":43.8106,"satlng":-90.3944,"satalt":657.5516}]}'
     
-    satelite_above_data_json = api_call(LCD)
+    satellite_above_data_json = api_call(LCD)
    
-    satelite_above_data = ujson.loads(satelite_above_data_json)
+    satellite_above_data = ujson.loads(satellite_above_data_json)
     LCD.fill(background_color)
     
     # main loop
@@ -448,7 +448,7 @@ if __name__=='__main__':
     
 # ================== Controls ================== 
         if keyA.value() == 0:
-            # mode switch button is button A satelites view (0) <-> settings view (1) 
+            # mode switch button is button A satellites view (0) <-> settings view (1) 
             if time.ticks_diff(time.ticks_ms(), keyA_last) > 500:
                 if view == 0:
                     view = 1
@@ -463,11 +463,11 @@ if __name__=='__main__':
         
         
         
-        # satelite view sepcific controls 
+        # satellite view sepcific controls 
         if view == 0:
             if right.value() == 0:
                 if time.ticks_diff(time.ticks_ms(), right_last) > step_time:
-                    if above_in_view < satelite_above_data["info"]["satcount"] - 1:
+                    if above_in_view < satellite_above_data["info"]["satcount"] - 1:
                         above_in_view = above_in_view + 1
                     else:
                         above_in_view = 0
@@ -479,15 +479,15 @@ if __name__=='__main__':
                     if above_in_view > 0:
                         above_in_view = above_in_view - 1
                     else:
-                        above_in_view = satelite_above_data["info"]["satcount"] - 1
+                        above_in_view = satellite_above_data["info"]["satcount"] - 1
                     left_last = time.ticks_ms()
                     LCD.fill(background_color)
         
             if keyB.value() == 0:
                 if time.ticks_diff(time.ticks_ms(), keyB_last) > api_refresh_time:
                     keyB_last = time.ticks_ms()
-                    satelite_above_data_json = api_call(LCD)
-                    satelite_above_data = ujson.loads(satelite_above_data_json)
+                    satellite_above_data_json = api_call(LCD)
+                    satellite_above_data = ujson.loads(satellite_above_data_json)
                     above_in_view = 0
                 else:
                     LCD.fill(background_color)
@@ -509,27 +509,27 @@ if __name__=='__main__':
             #        down_last = time.ticks_ms()
             #        LCD.fill(background_color)
             
-# ================== Satelites view ================== 
+# ================== satellites view ================== 
         if view == 0:
             draw_icon(0,208,15, LCD, main_color)
             draw_icon(1,208,75,LCD, main_color)
             
-            # my original plan was showing images about satelites but nope. Feel free to do it.
+            # my original plan was showing images about satellites but nope. Feel free to do it.
             # LCD.rect(60,60,120,120,main_color)
             
-            satelite_above_data["above"][0]
+            satellite_above_data["above"][0]
             
-            printstring(f"Satelites: {above_in_view+1}/{satelite_above_data["info"]["satcount"]}",15,15,1,main_color,LCD)
+            printstring(f"satellites: {above_in_view+1}/{satellite_above_data["info"]["satcount"]}",15,15,1,main_color,LCD)
             
-            printstring(f"Name: {satelite_above_data["above"][above_in_view]["satname"]}",15,35,1,main_color,LCD)
+            printstring(f"Name: {satellite_above_data["above"][above_in_view]["satname"]}",15,35,1,main_color,LCD)
             
-            printstring(f"Launch Date: {satelite_above_data["above"][above_in_view]["launchDate"]}",15,55,1,main_color,LCD)
+            printstring(f"Launch Date: {satellite_above_data["above"][above_in_view]["launchDate"]}",15,55,1,main_color,LCD)
             
-            printstring(f"lat:  {satelite_above_data["above"][above_in_view]["satlat"]}",15,75,1,main_color,LCD)
+            printstring(f"lat:  {satellite_above_data["above"][above_in_view]["satlat"]}",15,75,1,main_color,LCD)
             
-            printstring(f"lng: {satelite_above_data["above"][above_in_view]["satlng"]}",15,95,1,main_color,LCD)
+            printstring(f"lng: {satellite_above_data["above"][above_in_view]["satlng"]}",15,95,1,main_color,LCD)
             
-            printstring(f"Altitude (km): {satelite_above_data["above"][above_in_view]["satalt"]}",15,115,1,main_color,LCD)
+            printstring(f"Altitude (km): {satellite_above_data["above"][above_in_view]["satalt"]}",15,115,1,main_color,LCD)
             
             
                 
